@@ -1,4 +1,3 @@
-// Game elements
 const canvas = document.getElementById("game-canvas");
 const ctx = canvas.getContext("2d");
 const scoreDisplay = document.getElementById("score-display");
@@ -12,7 +11,6 @@ const rightBtn = document.getElementById("right-btn");
 const gameResult = document.getElementById("game-result");
 const finalScore = document.getElementById("final-score");
 
-// Game variables
 let canvasWidth, canvasHeight;
 let gameRunning = false;
 let score = 0;
@@ -26,29 +24,24 @@ let brickPadding = 10;
 let brickOffsetTop = 60;
 let brickOffsetLeft = 0;
 
-// Paddle variables
 let paddleWidth = 100;
 let paddleHeight = 15;
 let paddleX = 0;
 let paddleSpeed = 8;
 
-// Ball variables
 let ballRadius = 10;
 let ballX = 0;
 let ballY = 0;
 let ballSpeedX = 5;
 let ballSpeedY = -5;
 
-// Touch controls
 let touchX = null;
 
-// Initialize game
 function initGame() {
   resizeCanvas();
   createBricks();
   resetBallAndPaddle();
 
-  // Event listeners
   window.addEventListener("resize", resizeCanvas);
   canvas.addEventListener("mousemove", mouseMoveHandler);
   canvas.addEventListener("touchmove", touchMoveHandler, { passive: false });
@@ -64,14 +57,12 @@ function initGame() {
   rightBtn.addEventListener("touchend", stopPaddle);
 }
 
-// Resize canvas to fit container
 function resizeCanvas() {
   canvasWidth = canvas.parentElement.clientWidth;
   canvasHeight = canvas.parentElement.clientHeight;
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
 
-  // Adjust game elements for new size
   brickWidth =
     (canvasWidth -
       brickPadding * (brickColumnCount - 1) -
@@ -89,7 +80,6 @@ function resizeCanvas() {
   }
 }
 
-// Create brick layout
 function createBricks() {
   bricks = [];
   for (let c = 0; c < brickColumnCount; c++) {
@@ -100,7 +90,6 @@ function createBricks() {
   }
 }
 
-// Reset ball and paddle positions
 function resetBallAndPaddle() {
   paddleX = (canvasWidth - paddleWidth) / 2;
   ballX = canvasWidth / 2;
@@ -109,7 +98,6 @@ function resetBallAndPaddle() {
   ballSpeedY = -5;
 }
 
-// Start the game
 function startGame() {
   score = 0;
   lives = 3;
@@ -123,7 +111,6 @@ function startGame() {
   requestAnimationFrame(gameLoop);
 }
 
-// Game over
 function endGame(win) {
   gameRunning = false;
   gameResult.textContent = win ? "You Win!" : "Game Over";
@@ -131,20 +118,17 @@ function endGame(win) {
   gameOverScreen.style.display = "flex";
 }
 
-// Mouse movement handler
 function mouseMoveHandler(e) {
   if (!gameRunning) return;
   const relativeX = e.clientX - canvas.offsetLeft;
   if (relativeX > 0 && relativeX < canvasWidth) {
     paddleX = relativeX - paddleWidth / 2;
-    // Keep paddle within canvas
     if (paddleX < 0) paddleX = 0;
     if (paddleX + paddleWidth > canvasWidth)
       paddleX = canvasWidth - paddleWidth;
   }
 }
 
-// Touch movement handler
 function touchMoveHandler(e) {
   if (!gameRunning) return;
   e.preventDefault();
@@ -152,14 +136,12 @@ function touchMoveHandler(e) {
   const relativeX = touch.clientX - canvas.offsetLeft;
   if (relativeX > 0 && relativeX < canvasWidth) {
     paddleX = relativeX - paddleWidth / 2;
-    // Keep paddle within canvas
     if (paddleX < 0) paddleX = 0;
     if (paddleX + paddleWidth > canvasWidth)
       paddleX = canvasWidth - paddleWidth;
   }
 }
 
-// Button controls for mobile
 let paddleDirection = 0;
 
 function movePaddle(direction) {
@@ -170,17 +152,14 @@ function stopPaddle() {
   paddleDirection = 0;
 }
 
-// Update score display
 function updateScore() {
   scoreDisplay.textContent = `Score: ${score}`;
 }
 
-// Update lives display
 function updateLives() {
   livesDisplay.textContent = `Lives: ${lives}`;
 }
 
-// Collision detection
 function collisionDetection() {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
@@ -197,7 +176,6 @@ function collisionDetection() {
           score++;
           updateScore();
 
-          // Check if all bricks are broken
           let allBricksBroken = true;
           for (let c = 0; c < brickColumnCount; c++) {
             for (let r = 0; r < brickRowCount; r++) {
@@ -218,12 +196,9 @@ function collisionDetection() {
   }
 }
 
-// Draw game elements
 function draw() {
-  // Clear canvas
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-  // Draw bricks
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
       if (bricks[c][r].status === 1) {
@@ -241,7 +216,6 @@ function draw() {
     }
   }
 
-  // Draw paddle
   ctx.beginPath();
   ctx.rect(
     paddleX,
@@ -253,7 +227,6 @@ function draw() {
   ctx.fill();
   ctx.closePath();
 
-  // Draw ball
   ctx.beginPath();
   ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
   ctx.fillStyle = "#fff";
@@ -261,11 +234,9 @@ function draw() {
   ctx.closePath();
 }
 
-// Main game loop
 function gameLoop() {
   if (!gameRunning) return;
 
-  // Move paddle with buttons if needed
   if (paddleDirection !== 0) {
     paddleX += paddleSpeed * paddleDirection;
     if (paddleX < 0) paddleX = 0;
@@ -273,11 +244,9 @@ function gameLoop() {
       paddleX = canvasWidth - paddleWidth;
   }
 
-  // Move ball
   ballX += ballSpeedX;
   ballY += ballSpeedY;
 
-  // Wall collision (left/right)
   if (
     ballX + ballSpeedX > canvasWidth - ballRadius ||
     ballX + ballSpeedX < ballRadius
@@ -285,20 +254,18 @@ function gameLoop() {
     ballSpeedX = -ballSpeedX;
   }
 
-  // Wall collision (top)
   if (ballY + ballSpeedY < ballRadius) {
     ballSpeedY = -ballSpeedY;
-  }
-  // Paddle collision
-  else if (ballY + ballSpeedY > canvasHeight - ballRadius - paddleHeight - 10) {
+  } else if (
+    ballY + ballSpeedY >
+    canvasHeight - ballRadius - paddleHeight - 10
+  ) {
     if (ballX > paddleX && ballX < paddleX + paddleWidth) {
-      // Calculate bounce angle based on where ball hits paddle
       const hitPosition =
         (ballX - (paddleX + paddleWidth / 2)) / (paddleWidth / 2);
-      ballSpeedX = hitPosition * 5; // Adjust angle
-      ballSpeedY = -Math.abs(ballSpeedY); // Ensure ball goes up
+      ballSpeedX = hitPosition * 5;
+      ballSpeedY = -Math.abs(ballSpeedY);
     } else if (ballY + ballSpeedY > canvasHeight - ballRadius) {
-      // Ball missed the paddle
       lives--;
       updateLives();
 
@@ -316,5 +283,4 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// Initialize the game
 initGame();
