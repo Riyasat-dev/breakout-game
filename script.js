@@ -51,9 +51,7 @@ function initGame() {
   // Event listeners
   window.addEventListener("resize", resizeCanvas);
   canvas.addEventListener("mousemove", mouseMoveHandler);
-  canvas.addEventListener("touchmove", touchMoveHandler, {
-    passive: false,
-  });
+  canvas.addEventListener("touchmove", touchMoveHandler, { passive: false });
   startBtn.addEventListener("click", startGame);
   restartBtn.addEventListener("click", startGame);
   leftBtn.addEventListener("mousedown", () => movePaddle(-1));
@@ -107,6 +105,8 @@ function resetBallAndPaddle() {
   paddleX = (canvasWidth - paddleWidth) / 2;
   ballX = canvasWidth / 2;
   ballY = canvasHeight - 30;
+  ballSpeedX = 5 * (Math.random() > 0.5 ? 1 : -1);
+  ballSpeedY = -5;
 }
 
 // Start the game
@@ -297,18 +297,17 @@ function gameLoop() {
         (ballX - (paddleX + paddleWidth / 2)) / (paddleWidth / 2);
       ballSpeedX = hitPosition * 5; // Adjust angle
       ballSpeedY = -Math.abs(ballSpeedY); // Ensure ball goes up
-    }
-  }
-  // Bottom wall (lose life)
-  else if (ballY + ballSpeedY > canvasHeight - ballRadius) {
-    lives--;
-    updateLives();
+    } else if (ballY + ballSpeedY > canvasHeight - ballRadius) {
+      // Ball missed the paddle
+      lives--;
+      updateLives();
 
-    if (lives <= 0) {
-      endGame(false);
-      return;
-    } else {
-      resetBallAndPaddle();
+      if (lives <= 0) {
+        endGame(false);
+        return;
+      } else {
+        resetBallAndPaddle();
+      }
     }
   }
 

@@ -132,9 +132,3 @@ p {
     gap: 10px;
   }
 }
-
-@media (max-height: 700px) {
-  #game-container {
-    height: 70vh;
-  }
-}
